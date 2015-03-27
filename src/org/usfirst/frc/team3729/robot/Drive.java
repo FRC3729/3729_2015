@@ -83,13 +83,7 @@ public class Drive extends Thread {
     public void align() {
     	if (sonar0.getRangeInches() > sonar1.getRangeInches()) {
     		this.tank(Params.speed_creep, 0.0);
-    		System.out.println("First");
-    		System.out.println("Sonar 1: " + sonar0.getRangeInches());
-    		System.out.println("Sonar 2: " + sonar1.getRangeInches());
     	} else if (sonar0.getRangeInches() < sonar1.getRangeInches()) {
-//    		System.out.println("Second");
-    		System.out.println("Sonar 1: " + sonar0.getRangeInches());
-    		System.out.println("Sonar 2: " + sonar1.getRangeInches());
     		this.tank(0.0, -Params.speed_creep);
     	} else {
     		this.stopmotors();
@@ -106,20 +100,10 @@ public class Drive extends Thread {
     }    
     //!H Drive
     public void Hdrive(double x, double y, double z) {
-        centerMotor0.set(z);
-        centerMotor1.set(z);
-    	double left = y-x;
-    	double right = y+x;
-//        double left;
-//        double right;
-//        System.out.println("X: " + x + "Y: " + y);
-//        if(x < .10 && x > -.10){
-//        	left = y;
-//        	right = y;
-//        }else{
-//        	left = y-x;
-//        	right = y+x;
-//        }
+        centerMotor0.set(z+.08);
+        centerMotor1.set(z+.08);
+    	double left = y-(x - .02);
+    	double right = y+(x - .02);
         
         left = Params.clamp(left, -.95, .95);
         right = Params.clamp(right, -.95, .95);        

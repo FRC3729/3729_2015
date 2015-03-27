@@ -54,48 +54,62 @@ public class Robot extends SampleRobot {
     public void autonomous(){
         System.out.println("In auto");
         SmartDashboard.putString("DB/String 0", "== AUTONOMOUS ==");
+        _mech.auto_state = 0;
         auto_timer.start();
         while (isEnabled()){
             System.out.println("auto_timer: " + auto_timer.get());
-            
-            if(auto_timer.get() < 2.6){//puts arms out
+            if (auto_timer.get() >= 15) {
+            	_mech.auto_state = 8;
+            }
+            switch (_mech.auto_state) {
+            case 0: //resets arms
             	_mech.autoarm(0);
-            }
-            if(auto_timer.get()>2.0 && auto_timer.get()<3.0){//drives forward
-            	_drive.Hdrive(-.02,-.30,0);
-            }
-            if(auto_timer.get()>3.0 && auto_timer.get()<3.5){
+            	break;
+            case 1: //Drives Forward
+            	_drive.Hdrive(.02, -.3, 0);
+            	Timer.delay(1);
             	_drive.stopmotors();
-            }
-            if(auto_timer.get() >3.5 && auto_timer.get()<4.5){//pinches for container
+            	_mech.auto_state = 2;
+            	break;
+            case 2: //Pinches
             	_mech.autoarm(1);
-            }
-            
-            if(auto_timer.get() > 4.5 && auto_timer.get() <5.5){
-            	_mech.autoarm(2);
-            }
-            if(auto_timer.get()>5.5 && auto_timer.get() <6){
+            	break;
+            case 3: //Lifts up
+            	_mech.elevator0.set(.7);
+            	_mech.elevator1.set(.7);
+            	Timer.delay(1);
             	_mech.stopmotors();
-            }
-            if(auto_timer.get() > 5.5 && auto_timer.get() < 9.5){
-            	_drive.Hdrive(-.02,-.30,0);
-            }
-            if(auto_timer.get() >9.5 && auto_timer.get() <10){
+            	_mech.auto_state = 4;
+            	break;
+            case 4: //Stalls lift and drives reverse
+            	_drive.Hdrive(.04, .3, 0);
+            	_mech.elevator0.set(.2);
+            	_mech.elevator1.set(.2);
+            	Timer.delay(5);
             	_drive.stopmotors();
-            }
-            if(auto_timer.get()>11 && auto_timer.get() <11.5){
-            	_mech.autoarm(3);
-            }
-            if(auto_timer.get() >11.5 && auto_timer.get() <13){
             	_mech.stopmotors();
-            }
-            if(auto_timer.get() > 13 && auto_timer.get() < 14){
-            	_drive.Hdrive(-.02,.30,0);
-            }
-            if(auto_timer.get() >14. && auto_timer.get() <14.5){
+            	_mech.auto_state = 5;
+            	break;
+            case 5: //Drops container
+            	_mech.elevator0.set(-.3);
+            	_mech.elevator1.set(-.3);
+            	Timer.delay(.5);
+            	_mech.stopmotors();
+            	_mech.auto_state = 6;
+            	break;
+            case 6: //Resets arms
+            	_mech.autoarm(0);
+            case 7: //Drives Forward
+            	_drive.Hdrive(0, .3, 0);
+            	Timer.delay(1);
             	_drive.stopmotors();
-            }
-            
+            	_mech.auto_state = 8;
+            	break;
+            case 8: //Stops all
+            	_drive.stopmotors();
+            	_mech.stopmotors();
+            	break;
+            }   
         }
     }
 

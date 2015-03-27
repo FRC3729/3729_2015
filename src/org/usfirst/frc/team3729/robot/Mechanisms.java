@@ -13,18 +13,21 @@ public class Mechanisms extends Thread {
 	private Relay arm1;
 	private Relay intake;
 	
-	private Talon elevator0;
-	private Talon elevator1;
+	public Talon elevator0;
+	public Talon elevator1;
 	
 	private DigitalInput limit_arm0out;
 	private DigitalInput limit_arm1out;
 	
-	private Encoder encoder_arm0;
-	private Encoder encoder_arm1;
+	public Encoder encoder_arm0;
+	public Encoder encoder_arm1;
 	
+	private boolean encoder_reset = false;
 	private int narrow_pinch = 0;
+	public int auto_state = 8;
 	
 	Input _input;
+	Robot _bot;
 	
 	private Mechanisms() {
 		arm0 = new Relay(Params.port_Spike_arm[0]);
@@ -59,8 +62,6 @@ public class Mechanisms extends Thread {
 		SmartDashboard.putBoolean("DB/LED 0", encoder_arm0.get() == Params.position_arm[0][getPinch()] && encoder_arm1.get() == Params.position_arm[1][getPinch()]);
 		SmartDashboard.putBoolean("DB/LED 1", limit_arm0out.get());
 		SmartDashboard.putBoolean("DB/LED 2", limit_arm1out.get());
-		System.out.println(encoder_arm0.get() + " : " + encoder_arm1.get());
-		System.out.println("Pinch: " + getPinch());
 	}
 	
 	//Give out testing values
@@ -93,7 +94,6 @@ public class Mechanisms extends Thread {
 		if (_input.getAxis(2, 2) >= .75) { //Arms Separate
 			if (!limit_arm0out.get()) {
 				arm0.set(Relay.Value.kForward);
-				System.out.println("Test");
 			}else{
 				arm0.set(Relay.Value.kOff);
 			}
@@ -102,26 +102,48 @@ public class Mechanisms extends Thread {
 			}else{
 				arm1.set(Relay.Value.kOff);
 			}
+			if (limit_arm0out.get() && limit_arm1out.get()) {
+				encoder_reset = true;
+			}
 			if (Params.testing_mech){ System.out.println("arms out");}
 		} else if (_input.getAxis(2, 3) >= .75) { //Arms Close
-			if (encoder_arm0.get() > Params.position_arm[0][getPinch()]) {
-				arm0.set(Relay.Value.kReverse);
-			} else if (encoder_arm0.get() <= Params.position_arm[0][getPinch()]){
-				arm0.set(Relay.Value.kOff);
+			if (encoder_reset) {
+				if (encoder_arm0.get() > Params.position_arm[0][getPinch()]) {
+					arm0.set(Relay.Value.kReverse);
+				} else if (encoder_arm0.get() < Params.position_arm[0][getPinch()]){
+					arm0.set(Relay.Value.kOff);
+				}
+				if (encoder_arm1.get() <= Params.position_arm[1][getPinch()]) {
+					arm1.set(Relay.Value.kForward);
+				} else if (encoder_arm1.get() > Params.position_arm[1][getPinch()]){
+					arm1.set(Relay.Value.kOff);
+				}
+				if (Params.testing_mech){ System.out.println("arms in");}
+			} else {
+				if (!limit_arm0out.get()) {
+					arm0.set(Relay.Value.kForward);
+				}else{
+					arm0.set(Relay.Value.kOff);
+				}
+				if (!limit_arm1out.get()) {
+					arm1.set(Relay.Value.kReverse);
+				}else{
+					arm1.set(Relay.Value.kOff);
+				}
+				if (limit_arm0out.get() && limit_arm1out.get()) {
+					encoder_reset = true;
+				}
 			}
-			if (encoder_arm1.get() < Params.position_arm[1][getPinch()]) {
-				arm1.set(Relay.Value.kForward);
-			} else if (encoder_arm1.get() >= Params.position_arm[1][getPinch()]){
-				arm1.set(Relay.Value.kOff);
-			}
-			if (Params.testing_mech){ System.out.println("arms in");}
+			
 		} else if (_input.getButton(2, 3) && !limit_arm0out.get()) { //Arms Shift Left
 			arm0.set(Relay.Value.kForward);
 			arm1.set(Relay.Value.kForward);
+			encoder_reset = false;
 			if (Params.testing_mech){ System.out.println("arms left");}
 		} else if (_input.getButton(2, 2) && !limit_arm1out.get()) { //Arms Shift Right
 			arm0.set(Relay.Value.kReverse);
 			arm1.set(Relay.Value.kReverse);
+			encoder_reset = false;
 			if (Params.testing_mech){ System.out.println("arms right");}
 		} else {
 			arm0.set(Relay.Value.kOff);
@@ -136,26 +158,14 @@ public class Mechanisms extends Thread {
 			encoder_arm1.reset();
 		}
 		if (_input.xbox.getPOV() == 270) {
+			encoder_reset = false;
 			narrow_pinch = 0;
-			try {
-				Thread.sleep(100); //Make testing values actually readable
-			} catch (Exception e){
-				System.out.println(e);
-			}
 		} else if (_input.xbox.getPOV() == 90) {
+			encoder_reset = false;
 			narrow_pinch = 1;
-			try {
-				Thread.sleep(100); //Make testing values actually readable
-			} catch (Exception e){
-				System.out.println(e);
-			}
 		} else if (_input.xbox.getPOV() == 0){
+			encoder_reset = false;
 			narrow_pinch = 2;
-			try {
-				Thread.sleep(100); //Make testing values actually readable
-			} catch (Exception e){
-				System.out.println(e);
-			}
 		}
 		return narrow_pinch;
 	}
@@ -182,6 +192,15 @@ public class Mechanisms extends Thread {
 			}else{
 				arm1.set(Relay.Value.kOff);
 			}
+			if (limit_arm0out.get()) {
+				encoder_arm0.reset();
+			}
+			if (limit_arm1out.get()) {
+				encoder_arm1.reset();
+			}
+			if(limit_arm0out.get() && limit_arm1out.get()) {
+				auto_state++;
+			}
 		}
 		
 		if(t == 1){
@@ -195,6 +214,9 @@ public class Mechanisms extends Thread {
 				arm1.set(Relay.Value.kForward);
 			}else{
 				arm1.set(Relay.Value.kOff);
+			}
+			if ((encoder_arm0.get() < Params.position_arm[0][2]) && (encoder_arm1.get() > Params.position_arm[1][2])) {
+				auto_state = 3;
 			}
 		}
 		
