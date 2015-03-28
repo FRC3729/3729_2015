@@ -65,46 +65,46 @@ public class Robot extends SampleRobot {
             case 0: //resets arms
             	_mech.autoarm(0);
             	break;
-            case 1: //Drives Forward
-            	_drive.Hdrive(.02, -.3, 0);
-            	Timer.delay(1);
-            	_drive.stopmotors();
-            	_mech.auto_state = 2;
-            	break;
-            case 2: //Pinches
-            	_mech.autoarm(1);
-            	break;
-            case 3: //Lifts up
-            	_mech.elevator0.set(.7);
-            	_mech.elevator1.set(.7);
-            	Timer.delay(1);
-            	_mech.stopmotors();
-            	_mech.auto_state = 4;
-            	break;
+//            case 1: //Drives Forward
+//            	_drive.Hdrive(.02, -.3, 0);
+//            	Timer.delay(1);
+//            	_drive.stopmotors();
+//            	_mech.auto_state = 2;
+//            	break;
+//            case 2: //Pinches
+//            	_mech.autoarm(1);
+//            	break;
+//            case 3: //Lifts up
+//            	_mech.elevator0.set(.7);
+//            	_mech.elevator1.set(.7);
+//            	Timer.delay(1);
+//            	_mech.stopmotors();
+//            	_mech.auto_state = 4;
+//            	break;
             case 4: //Stalls lift and drives reverse
             	_drive.Hdrive(.04, .3, 0);
-            	_mech.elevator0.set(.2);
-            	_mech.elevator1.set(.2);
+//            	_mech.elevator0.set(.2);
+//            	_mech.elevator1.set(.2);
             	Timer.delay(5);
             	_drive.stopmotors();
-            	_mech.stopmotors();
-            	_mech.auto_state = 5;
-            	break;
-            case 5: //Drops container
-            	_mech.elevator0.set(-.3);
-            	_mech.elevator1.set(-.3);
-            	Timer.delay(.5);
-            	_mech.stopmotors();
-            	_mech.auto_state = 6;
-            	break;
-            case 6: //Resets arms
-            	_mech.autoarm(0);
-            case 7: //Drives Forward
-            	_drive.Hdrive(0, .3, 0);
-            	Timer.delay(1);
-            	_drive.stopmotors();
+//            	_mech.stopmotors();
             	_mech.auto_state = 8;
             	break;
+//            case 5: //Drops container
+//            	_mech.elevator0.set(-.3);
+//            	_mech.elevator1.set(-.3);
+//            	Timer.delay(.5);
+//            	_mech.stopmotors();
+//            	_mech.auto_state = 6;
+//            	break;
+//            case 6: //Resets arms
+//            	_mech.autoarm(0);
+//            case 7: //Drives Forward
+//            	_drive.Hdrive(0, .3, 0);
+//            	Timer.delay(1);
+//            	_drive.stopmotors();
+//            	_mech.auto_state = 8;
+//            	break;
             case 8: //Stops all
             	_drive.stopmotors();
             	_mech.stopmotors();

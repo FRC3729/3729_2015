@@ -32,7 +32,7 @@ public class Params {
     //!Pinch positions
     //!Arm0 is [0][0/1] Arm1[1][0/1]
     //!
-    public static final int[][] position_arm = {{-8,-281,-245},{16,381,245}};
+    public static final int[][] position_arm = {{-14,-281,-195},{23,381,195}};
     
     //!Testing information
     public static final boolean testing_drive = false;

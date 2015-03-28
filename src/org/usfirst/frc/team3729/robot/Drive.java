@@ -100,8 +100,8 @@ public class Drive extends Thread {
     }    
     //!H Drive
     public void Hdrive(double x, double y, double z) {
-        centerMotor0.set(z+.08);
-        centerMotor1.set(z+.08);
+        centerMotor0.set(z);
+        centerMotor1.set(z);
     	double left = y-(x - .02);
     	double right = y+(x - .02);
         
