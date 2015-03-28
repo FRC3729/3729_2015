@@ -199,7 +199,7 @@ public class Mechanisms extends Thread {
 				encoder_arm1.reset();
 			}
 			if(limit_arm0out.get() && limit_arm1out.get()) {
-				auto_state = 4;
+				auto_state = 8;
 			}
 		}
 		

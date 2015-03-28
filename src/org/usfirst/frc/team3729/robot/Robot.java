@@ -81,15 +81,15 @@ public class Robot extends SampleRobot {
 //            	_mech.stopmotors();
 //            	_mech.auto_state = 4;
 //            	break;
-            case 4: //Stalls lift and drives reverse
-            	_drive.Hdrive(.04, .3, 0);
+//            case 4: //Stalls lift and drives reverse
+//            	_drive.Hdrive(-.04, .3, 0);
 //            	_mech.elevator0.set(.2);
 //            	_mech.elevator1.set(.2);
-            	Timer.delay(5);
-            	_drive.stopmotors();
+//            	Timer.delay(4);
+//            	_drive.stopmotors();
 //            	_mech.stopmotors();
-            	_mech.auto_state = 8;
-            	break;
+//            	_mech.auto_state = 5;
+//            	break;
 //            case 5: //Drops container
 //            	_mech.elevator0.set(-.3);
 //            	_mech.elevator1.set(-.3);
